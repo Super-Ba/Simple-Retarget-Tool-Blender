@@ -324,8 +324,6 @@ def readPresetApply(context,filepath):
  
             # add item to the list
             if len(bonelists) > 0:
-            bones.append(bonelists)
-                # add item to the list
                 bones.append(bonelists)
 
     filehandle.close()
