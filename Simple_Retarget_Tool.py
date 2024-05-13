@@ -63,6 +63,28 @@ def retarget_bone(context):
     actposebone.constraints["CopyRot SMPTarget"].mix_mode = 'BEFORE'
 
 
+def retarget_bone_with_parent(context):
+
+    actposebone = bpy.context.active_pose_bone
+
+    bpy.ops.object.mode_set(mode='POSE')
+    bpy.context.object.pose.use_mirror_x = False
+    bpy.ops.object.mode_set(mode='EDIT')
+    bpy.context.object.data.use_mirror_x = False
+    bpy.context.active_bone.roll = bpy.context.selected_bones[1].roll
+    bpy.ops.object.mode_set(mode='POSE')
+    bpy.ops.pose.constraint_add_with_targets(type='COPY_LOCATION')
+    actposebone.constraints[-1].name = 'CopyLoc SMPTarget'
+    actposebone.constraints["CopyLoc SMPTarget"].target_space = 'LOCAL_WITH_PARENT'
+    actposebone.constraints["CopyLoc SMPTarget"].owner_space = 'LOCAL_WITH_PARENT'
+    actposebone.constraints["CopyLoc SMPTarget"].use_offset= True
+
+    bpy.ops.pose.constraint_add_with_targets(type='COPY_ROTATION')
+    actposebone.constraints[-1].name = 'CopyRot SMPTarget'
+    actposebone.constraints["CopyRot SMPTarget"].target_space = 'LOCAL_WITH_PARENT'
+    actposebone.constraints["CopyRot SMPTarget"].owner_space = 'LOCAL_WITH_PARENT'
+    actposebone.constraints["CopyRot SMPTarget"].mix_mode = 'BEFORE'
+
 
 
 #Create Root Constraints
@@ -331,7 +353,10 @@ def readPresetApply(context,filepath):
         bpy.context.object.data.bones.active = sboneToSelect
         sboneToSelect.select = True
         if i !=0:
-            retarget_bone(context)
+            if SourceArmBones[i].find("_ik.") >= 0:
+                retarget_bone_with_parent(context)
+            else:
+                retarget_bone(context)
         else:
             retarget_root(context)
 
