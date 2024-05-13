@@ -363,6 +363,15 @@ def readPresetApply(context,filepath):
         i += 1
 
 
+    i=0
+    for i in range (len(SourceArmBones)):
+
+        sboneToSelect =  SourceArm.pose.bones[SourceArmBones[i]].bone
+        bpy.context.object.data.bones.active = sboneToSelect
+        sboneToSelect.select = True
+        i += 1
+
+
 class RetargetRoot(bpy.types.Operator):
     """Retarget root bone"""
     bl_idname = "simpleretarget.retarget_root"
