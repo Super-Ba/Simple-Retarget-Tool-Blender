@@ -298,10 +298,13 @@ def readPresetApply(context,filepath):
         currentPlace = filehandle.readlines()[4:]
         for line in currentPlace:
             # remove linebreak which is the last character of the string
-            bonelists = line[:-1]
-
+            bonelists = line.strip()
+ 
             # add item to the list
+            if len(bonelists) > 0:
             bones.append(bonelists)
+                # add item to the list
+                bones.append(bonelists)
 
     filehandle.close()
 
