@@ -372,6 +372,39 @@ def readPresetApply(context,filepath):
         i += 1
 
 
+
+def readPresetToSelectSourceArmBones(context,filepath):  
+
+
+    # Read from File
+    bones = []
+    SourceArmBones = []
+
+    # open file and read the content in a list
+    with open(filepath, 'r') as filehandle:
+        currentPlace = filehandle.readlines()[4:]
+        for line in currentPlace:
+            # remove linebreak which is the last character of the string
+            bonelists = line.strip()
+ 
+            # add item to the list
+            if len(bonelists) > 0:
+                bones.append(bonelists)
+
+    filehandle.close()
+
+    SourceArmBones = bones[::2]
+    SourceArm = bpy.context.active_object
+
+    i=0
+    for i in range (len(SourceArmBones)):
+
+        sboneToSelect =  SourceArm.pose.bones[SourceArmBones[i]].bone
+        bpy.context.object.data.bones.active = sboneToSelect
+        sboneToSelect.select = True
+        i += 1
+
+
 class RetargetRoot(bpy.types.Operator):
     """Retarget root bone"""
     bl_idname = "simpleretarget.retarget_root"
@@ -479,6 +512,26 @@ class OT_ApplyPreset(Operator, ImportHelper):
             self.report({'ERROR'},(message+traceback.format_exc(limit=1)))
             return {'CANCELLED'} 
 
+
+class OT_PresetToSelectSourceArmBones(Operator, ExportHelper): 
+    bl_idname = "simpleretarget.preset_to_select" 
+    bl_label = "preset to select source bones" 
+
+    filename_ext = '.txt'
+    
+    filter_glob: StringProperty(
+        default='*.txt',
+        options={'HIDDEN'}
+    )
+
+    directory : StringProperty(subtype='DIR_PATH')
+    
+    def execute(self, context): 
+                
+        readPresetToSelectSourceArmBones(context,self.filepath)
+        return {'FINISHED'}
+
+
 #UI
 
 class SimpleRetargetUI(Menu):
@@ -496,6 +549,7 @@ class SimpleRetargetUI(Menu):
         layout.operator("simpleretarget.clear_constraint", text="clear pose constraint")
         layout.operator("simpleretarget.write_preset", text="export preset")
         layout.operator("simpleretarget.apply_preset", text="import preset")
+        layout.operator("simpleretarget.preset_to_select", text="preset to select")
 
 
 
@@ -514,6 +568,7 @@ classes = (
     SetRestPoseObject,
     OT_WritePreset,
     OT_ApplyPreset,
+    OT_PresetToSelectSourceArmBones,
     SimpleRetargetUI
 )
 
